@@ -37,4 +37,32 @@ Follow instructions to proceed
 ```cmd
 bayesiannet -p Alarm.json -e {burglary:\"T\"} -m earthquake -q John_calls,earthquake,alarm,Marry_calls -s 1000000
 ```
-(Please note escape sign ```\"T\"``` before quote marks
+### Example output:
+For input:
+```cmd
+bayesiannet -p Flower.json -e {flower_species:\"iris\"} -m flower_species -q color -s 10000
+```
+Program outputs:
+```cmd
++-+-+-+-+-+-+-+-+-+-+
+|E|A|R|I|N| |E|X| |5|
++-+-+-+-+-+-+-+-+-+-+
+Oskar Hącel
+Marcin Lisowski
+PW, 2021
++-+-+-+-+-+-+-+-+-+-+
+
+Given data:
+        Selected markov blanket node: flower_species
+        Query nodes: color
+        Evidence nodes: flower_species: iris
+        Steps: 10000
+
+Markov blanket for flower_species:
+        color
+
+Query for color:
+        red: 0.2971999999999836
+        blue: 0.7027999999999389
+```
+(Please note escape signs ```\"T\"``` before quote marks)

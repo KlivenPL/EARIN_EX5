@@ -1,5 +1,6 @@
 ﻿using EARIN_EX5.Entities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace EARIN_EX5.UserInputs {
@@ -12,17 +13,11 @@ namespace EARIN_EX5.UserInputs {
 
         public override string ToString() {
             var sb = new StringBuilder();
-            /*
-                        sb.AppendLine($"Dimensions: {Dimensions}");
-                        sb.AppendLine($"d: {D}");
-                        sb.AppendLine($"A");
-                        sb.AppendLine($"{A}");
-                        sb.AppendLine($"B: {B}");
-                        sb.AppendLine($"C: {C}");
 
-                        sb.AppendLine($"Crossover probability: {CrossoverProb}");
-                        sb.AppendLine($"Mutation probability: {MutationProb}");
-                        sb.AppendLine($"Iterations: {Iterations}");*/
+            sb.AppendLine($"\tSelected markov blanket node: {MarkovBlanketNode.Name ?? "(none)"}");
+            sb.AppendLine($"\tQuery nodes: {string.Join(", ", QueryNodes.Select(n => n.Name))}");
+            sb.AppendLine($"\tEvidence nodes: {string.Join(", ", EvidenceNodes.Select(n => n.ToString()))}");
+            sb.AppendLine($"\tSteps: {Steps}");
 
             return sb.ToString();
         }

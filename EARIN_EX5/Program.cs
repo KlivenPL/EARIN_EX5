@@ -21,6 +21,8 @@ namespace EARIN_EX5 {
         }
 
         private void Start(UserInput userInput) {
+            PrintUserInput(userInput);
+
             new UserInputValidator(userInput).Validate();
 
             if (userInput.MarkovBlanketNode != null) {
@@ -43,15 +45,13 @@ namespace EARIN_EX5 {
         private void PrintMarkovBlanket(Node node) {
             Console.WriteLine($"Markov blanket for {node.Name}:");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(string.Join(", ", node.MarkovBlanket.Select(node => node.Name)));
+            Console.WriteLine($"\t{string.Join(", ", node.MarkovBlanket.Select(node => node.Name))}");
             Console.ResetColor();
             Console.WriteLine();
         }
 
         private void PrintUserInput(UserInput userInput) {
-            Console.WriteLine();
             Console.WriteLine("Given data:");
-            Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(userInput.ToString());
             Console.ResetColor();
