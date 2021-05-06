@@ -2,7 +2,7 @@
 Program that is able to perform basic inference in Bayesian networks using the MCMC algorithm with Gibbs sampling algorithm.
 Created in C# by Oskar Hącel & Marcin Lisowski  
 
-Politechnika Warszawska, 03.2021
+Politechnika Warszawska, 05.2021
 
 ## Preparation
 1. Download release package [here](https://github.com/KlivenPL/EARIN_EX5/releases) or build project yourself
