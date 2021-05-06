@@ -1,5 +1,5 @@
 # EARIN EX5
-Genetic algorithm program, used to maximize a function   
+Program that is able to perform basic inference in Bayesian networks using the MCMC algorithm with Gibbs sampling algorithm.
 Created in C# by Oskar Hącel & Marcin Lisowski  
 
 Politechnika Warszawska, 03.2021
@@ -7,41 +7,34 @@ Politechnika Warszawska, 03.2021
 ## Preparation
 1. Download release package [here](https://github.com/KlivenPL/EARIN_EX5/releases) or build project yourself
 1. Release package supports Windows machines
-1. Be sure, that decimal separator is set to "." (dot) in Windows Control Panel
 ## Build
 Build using newest version of Visual Studio 2019 (16.9.0) and .Net Core 3.0
 ## Usage
 Run application (using command line) to display help, like:
 ```cmd
-geneticalg --help
+bayesiannet --help
 ```
 Follow instructions to proceed
 
 ### Parameters:
 ```cmd
-  -D, --dimensions         Required. Specifies dimensionality
 
-  -d, --d-num              Required. Range of searched integers, [-2^d, 2^d)
+  -p, --network-path      Required. Bayesian network JSON file path
 
-  -a, --a-mat              Required. Defines A matrix
+  -e, --evidence          Evidence, given in JSON object format without spaces, eg. {burglary:\"T\",alarm:\"T\"}. If defined, program expects query to be defined as well
 
-  -b, --b-vec              Required. Defines b vector
+  -m, --markov-blanket    If defined, program prints out Markov blanket for entered variable, eg. burglary
 
-  -c, --c-num              Required. Defines c real number
+  -q, --queries           Selected query variables, eg. earthquake,John_calls
 
-  -p, --population-size    Required. Defines population size
+  -s, --steps             Required. The number of steps performed by MCMC algorithm
 
-  -C, --crossover-prob     Required. Defines crossover probability
+  --help                  Display this help screen.
 
-  -m, --mutation-prob      Required. Defines mutation probability
-
-  -i, --iterations         Required. Defines number of iterations
-
-  --help                   Display help screen.
-
-  --version                Display version information.
+  --version               Display version information.
 ```
 ### Example usage:
 ```cmd
-geneticalg -D 3 -d 3 -a -2,1,0;1,-2,1;0,1,-2 -b -14,14,-2 -c -23.5 -p 50 -C 0.9 -m 0.05 -i 100
+bayesiannet -p Alarm.json -e {burglary:\"T\"} -m earthquake -q John_calls,earthquake,alarm,Marry_calls -s 1000000
 ```
+(Please note escape sign ```\"T\"``` before quote marks
