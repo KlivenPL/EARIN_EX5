@@ -10,7 +10,7 @@ namespace EARIN_EX5.UserInputs {
         [Option('p', "network-path", Required = true, HelpText = "Bayesian network JSON file path")]
         public string NetworkPath { get; set; }
 
-        [Option('e', "evidence", Required = false, HelpText = "Evidence, given in JSON object format, eg. {\"burglary\": 1, \"alarm\": 1}. If defined, program expects query to be defined as well")]
+        [Option('e', "evidence", Required = false, HelpText = "Evidence, given in JSON object format without spaces, eg. {burglary:\"T\",alarm:\"T\"}. If defined, program expects query to be defined as well")]
         public string Evidence { get; set; }
 
         [Option('m', "markov-blanket", Required = false, HelpText = "If defined, program prints out Markov blanket for entered variable, eg. burglary")]

@@ -1,4 +1,8 @@
-﻿namespace EARIN_EX5.UserInputs {
+﻿using EARIN_EX5.Helpers;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace EARIN_EX5.UserInputs {
     class UserInputValidator {
         private readonly UserInput userInput;
 
@@ -6,112 +10,76 @@
             this.userInput = userInput;
         }
 
-        /* public void Validate()
-         {
-             ValidateIsBVector();
-             ValidateAMatrixSize();
-             ValidateBVectorSize();
-             ValidateDimensions();
-             ValidateDnum();
-             ValidatePopulationSize();
-             ValidateCrossoverProb();
-             ValidateMutationProb();
-             ValidateIterations();
-         }
+        public void Validate() {
+            ValidateIfAcyclic();
+            ValidateProbabilities();
+            ValidateProbabilitiesSums();
+            ValidateEvidenceAndQuery();
+        }
 
-         private void ValidateIsBVector()
-         {
-             if (userInput.B.ndim != 1)
-             {
-                 Error($"Invalid vector B dimensions");
-             }
-         }
+        private void ValidateEvidenceAndQuery() {
+            if (userInput.EvidenceNodes?.Any() == true && userInput.QueryNodes?.Any() != true) {
+                ExceptionHelper.ThrowAndExit(ExceptionHelper.ExceptionType.InvalidInput, "If evidence is defined, program expects queries to be defined as well");
+            }
+        }
 
-         private void ValidateAMatrixSize()
-         {
-             var A = userInput.A;
-             var dimensions = userInput.Dimensions;
+        private void ValidateIfAcyclic() {
+            var network = userInput.Network.DeepCopy();
 
-             if (A.shape.Dimensions.Length != 2 || A.shape[0] != dimensions || A.shape[1] != dimensions)
-             {
-                 Error($"Invalid matrix A dimensions. For dimensions={dimensions}, A should be a {dimensions}x{dimensions} matrix");
-             }
-         }
+            var S = network.Nodes.Where(n => !n.Parents.Any()).ToList();
 
-         private void ValidateBVectorSize()
-         {
-             var B = userInput.B;
-             var dimensions = userInput.Dimensions;
+            while (S.Any()) {
+                var n = S.First();
+                S.Remove(n);
 
-             if (B.size != dimensions)
-             {
-                 Error($"Invalid vector B size. B should be 1x{dimensions} vector");
-             }
-         }
+                foreach (var m in network.Nodes.Where(m => n.Children.Contains(m))) {
+                    n.Children.Remove(m);
+                    m.Parents.Remove(n);
+                    if (!m.Parents.Any()) {
+                        S.Add(m);
+                    }
+                }
+            }
 
-         private void ValidateDnum()
-         {
-             var d = userInput.D;
+            if (network.Nodes.Any(n => n.Children.Any() || n.Parents.Any())) {
+                ExceptionHelper.ThrowAndExit(ExceptionHelper.ExceptionType.ValidationError, "Given network contains at least one cycle");
+            }
+        }
 
-             if (d < 1)
-             {
-                 Error($"Invalid d, should be >= 1");
-             }
-         }
+        private void ValidateProbabilities() {
+            var errors = userInput.Network.Nodes
+                .Where(n => !n.Probabilities.Any())
+                .Select(n => $"Node {n.Name} does not have probability table defined");
 
-         private void ValidateDimensions()
-         {
-             var dimensions = userInput.Dimensions;
+            if (errors.Any()) {
+                ExceptionHelper.ThrowAndExit(ExceptionHelper.ExceptionType.ValidationError, errors.ToArray());
+            }
+        }
 
-             if (dimensions < 1)
-             {
-                 Error($"Invalid Dimensions, should be >= 1");
-             }
-         }
+        private void ValidateProbabilitiesSums() {
+            var errors = new List<string>();
+            foreach (var node in userInput.Network.Nodes) {
+                var splitedProb = node.Probabilities
+                    .Select(p => new {
+                        Name = string.Join(",", p.ConcatedNames.Split(",", System.StringSplitOptions.RemoveEmptyEntries).SkipLast(1)),
+                        Value = p.Value
+                    });
 
-         private void ValidatePopulationSize()
-         {
-             var populationSize = userInput.PopulationSize;
+                var groups = splitedProb
+                    .GroupBy(sp => sp.Name)
+                    .Select(g => new {
+                        g.Key,
+                        Value = g.Sum(s => s.Value)
+                    });
 
-             if (populationSize < 2 || populationSize % 2 == 1)
-             {
-                 Error($"Invalid population size, has to be >= 2 and even");
-             }
-         }
+                if (groups.Any(g => g.Value != 1)) {
+                    errors.Add($"Incorrect probabilities for node {node.Name}");
+                }
+            }
 
-         private void ValidateCrossoverProb()
-         {
-             var crossoverProb = userInput.CrossoverProb;
-
-             if (crossoverProb < 0 || crossoverProb > 1)
-             {
-                 Error($"Invalid crossover probability, has to be > 0 and < 1");
-             }
-         }
-
-         private void ValidateMutationProb()
-         {
-             var mutationProb = userInput.CrossoverProb;
-
-             if (mutationProb < 0 || mutationProb > 1)
-             {
-                 Error($"Invalid mutation probability, has to be > 0 and < 1");
-             }
-         }
-
-         private void ValidateIterations()
-         {
-             var iterations = userInput.Iterations;
-
-             if (iterations < 1)
-             {
-                 Error($"Number of iterations has to be >= 1");
-             }
-         }
-
-         private void Error(string message)
-         {
-             ExceptionHelper.ThrowAndExit(ExceptionHelper.ExceptionType.ValidationError, message);
-         }*/
+            if (errors.Any()) {
+                ExceptionHelper.ThrowAndExit(ExceptionHelper.ExceptionType.ValidationError, errors.ToArray());
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "EARIN_EX5": {
       "commandName": "Project",
-      "commandLineArgs": "-p TestData\\\\Alarm.json -e {burglary:\\\"T\\\"} -q John_calls,earthquake,alarm,Marry_calls -s 1000000"
+      "commandLineArgs": "-p TestData\\\\Flower.json -e {flower_species:\\\"iris\\\"} -m flower_species -q  color -s 10000"
     }
   }
 }

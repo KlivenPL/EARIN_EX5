@@ -7,13 +7,12 @@ using System.Linq;
 
 namespace EARIN_EX5.Algorithm {
     class McmcGibbs {
-
         private readonly UserInput input;
         private readonly List<Node> nonEvidenceNodes;
 
         public McmcGibbs(UserInput input) {
             this.input = input;
-            nonEvidenceNodes = input.Network.Nodes.Where(n => !input.EvidenceNodes.Contains(n)).ToList();
+            nonEvidenceNodes = input.Network.Nodes.Where(n => input.EvidenceNodes?.Contains(n) != true).ToList();
         }
 
         public void EvaluateQueries() {
@@ -28,12 +27,8 @@ namespace EARIN_EX5.Algorithm {
             }
 
             for (int i = 0; i < input.Steps; i++) {
-                var Xi = nonEvidenceNodes.PickRandom();
-                Xi.Value = SampleUsingMarkovBlanket(Xi);
-
-                /*if (counter.ContainsKey(Xi)) {
-                    counter[Xi][Xi.Value] += 1;
-                }*/
+                var node = nonEvidenceNodes.PickRandom();
+                node.Value = SampleUsingMarkovBlanket(node);
 
                 foreach (var queryNode in input.QueryNodes) {
                     counter[queryNode][queryNode.Value] += 1.0 / input.Steps;
@@ -71,7 +66,6 @@ namespace EARIN_EX5.Algorithm {
                 }
 
                 p *= pRest;
-
                 probabilities.Add((xj, p));
             }
 

@@ -17,32 +17,20 @@ namespace EARIN_EX5 {
 
         private static void GetUserInput(string[] args) {
             Parser.Default.ParseArguments<RawUserInput>(args)
-                   .WithParsed(o => new Program().Start(o.ToUserInput()));
+                .WithParsed(o => new Program().Start(o.ToUserInput()));
         }
 
         private void Start(UserInput userInput) {
+            new UserInputValidator(userInput).Validate();
+
             if (userInput.MarkovBlanketNode != null) {
                 PrintMarkovBlanket(userInput.MarkovBlanketNode);
             }
 
-            var mcmc = new McmcGibbs(userInput);
-            mcmc.EvaluateQueries();
-
-            /*new UserInputValidator(userInput).Validate();
-
-            PrintUserInput(userInput);
-
-            var genAlg = new GeneticAlgorithm(userInput);
-
-            // Just to see initial random population as a reference point.
-            genAlg.PrintPopulation();
-            genAlg.PrintPopulationStatistics();
-            // -=-=-
-
-            genAlg.Evolve();
-
-            genAlg.PrintPopulation();
-            genAlg.PrintPopulationStatistics();*/
+            if (userInput.QueryNodes?.Any() == true) {
+                var mcmc = new McmcGibbs(userInput);
+                mcmc.EvaluateQueries();
+            }
         }
 
         private static void PrintLogo() {
@@ -57,6 +45,7 @@ namespace EARIN_EX5 {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(string.Join(", ", node.MarkovBlanket.Select(node => node.Name)));
             Console.ResetColor();
+            Console.WriteLine();
         }
 
         private void PrintUserInput(UserInput userInput) {
@@ -67,17 +56,5 @@ namespace EARIN_EX5 {
             Console.WriteLine(userInput.ToString());
             Console.ResetColor();
         }
-
-        /*private void DebugGrayCode() {
-    var grayHelper = new GrayHelper(8);
-    for (int i = 0; i <= 8; i++) {
-        var gray = grayHelper.ToGray(i);
-        var parsedGray = grayHelper.ToInt(gray);
-        System.Console.WriteLine($"i: {i}\tgray: {gray.ToBitString()}\tparsed:{parsedGray}");
-
-        if (i != parsedGray)
-            throw new System.Exception();
-    }
-}*/
     }
 }
